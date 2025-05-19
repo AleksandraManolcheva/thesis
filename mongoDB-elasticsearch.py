@@ -13,7 +13,6 @@ collection = db["eligibility_data_"]
 # Elasticsearch connection
 es = Elasticsearch([{"scheme": "http", "host": "localhost", "port": 9200}])
 
-# Ensure index exists with proper mappings (create if necessary)
 index_exists = es.indices.exists(index="health_insurance_data")
 if not index_exists:
     es.indices.create(index="health_insurance_data", body={
@@ -25,18 +24,17 @@ if not index_exists:
                         "timestamp": {"type": "date"}
                     }
                 },
-                # You can add more fields here if needed
+               
             }
         }
     })
 
-# Custom function to serialize MongoDB data (handling ObjectId and datetime)
+
 def serialize_document(doc):
     """Converts ObjectId and datetime to serializable format"""
-    doc_id = str(doc['_id'])  # Save for later
-    del doc['_id']            # Do not store _id in _source
+    doc_id = str(doc['_id']) 
+    del doc['_id']           
 
-    # Convert root-level timestamp
     if 'timestamp' in doc and isinstance(doc['timestamp'], datetime.datetime):
         doc['timestamp'] = doc['timestamp'].isoformat()
 
@@ -48,7 +46,6 @@ def serialize_document(doc):
 
     return doc_id, doc
 
-# Function to prepare data for Elasticsearch
 def generate_es_action(doc):
     """Converts document to Elasticsearch action"""
     doc_id, serialized_doc = serialize_document(doc)
@@ -59,9 +56,9 @@ def generate_es_action(doc):
         "_source": serialized_doc
     }
 
-# Log function moved here to avoid NameError
+
 def log_failed_indexing(errors):
-    """Log details for failed indexing documents"""
+   
     for error in errors:
         try:
             print(f"Failed to index document: {json.dumps(error, indent=2)}")
@@ -77,7 +74,6 @@ try:
     success, failed = bulk(es, actions, chunk_size=100, raise_on_error=False, stats_only=False)
     print(f"Successfully indexed {success} documents.")
 
-    # 'failed' is a list of errors, not a count, if raise_on_error=False
     if failed:
         print(f"{len(failed)} document(s) failed to index.")
         log_failed_indexing(failed)
