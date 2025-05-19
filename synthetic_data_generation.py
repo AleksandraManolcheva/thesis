@@ -2,9 +2,8 @@ from faker import Faker
 from pymongo import MongoClient
 import random
 from datetime import datetime
-from app import HealthInsuranceEligibility  # Assuming you save it separately
+from app import HealthInsuranceEligibility  
 
-# Initialize
 fake = Faker('en_US')
 client = MongoClient("mongodb://localhost:27017/")
 db = client['health_insurance_db']
@@ -92,7 +91,6 @@ def generate_fake_person():
 
     return doc
 
-# Insert sample data
 for _ in range(1000000):  # ⚡ Make sure Mongo can handle 1M records — can reduce for testing
     collection.insert_one(generate_fake_person())
 
