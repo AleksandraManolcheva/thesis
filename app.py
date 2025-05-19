@@ -9,7 +9,7 @@ client = MongoClient("mongodb://localhost:27017/")
 db = client["health_insurance_db"]
 collection = db["eligibility_data_"]
 
-# Health Insurance Eligibility Class (Unchanged)
+# Health Insurance Eligibility Class
 class HealthInsuranceEligibility:
     def __init__(self, income, family_size, ages, state, citizenship_status, residency_status, medical_necessity, disability, expenses):
         self.income = income
@@ -119,7 +119,7 @@ def index():
 
         eligibility = eligibility_checker.eligibility_summary()
 
-        # Create the MongoDB document in the structure you provided
+       
         document = {
             "eligibility_summary": eligibility,
             "visit_data": "Routine check-up provided. No immediate concerns.",
